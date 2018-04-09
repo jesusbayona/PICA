@@ -13,6 +13,7 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -89,5 +90,6 @@ public class CustomerFacadeREST extends AbstractFacade<Customer> {
     protected EntityManager getEntityManager() {
         return em;
     }
+     
     
 }
