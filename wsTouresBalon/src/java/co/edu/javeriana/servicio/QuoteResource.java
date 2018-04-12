@@ -6,16 +6,23 @@
 package co.edu.javeriana.servicio;
 
 import co.edu.javeriana.objetos.consultas;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import javax.json.stream.JsonParser;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import org.jboss.logging.Param;
 
 /**
  * REST Web Service
@@ -23,6 +30,7 @@ import javax.ws.rs.core.MediaType;
  * @author Jesus Bayona
  */
 @Path("quote")
+@Produces("application/json")
 public class QuoteResource {
 
     @Context
@@ -34,44 +42,67 @@ public class QuoteResource {
     public QuoteResource() {
     }
 
-    /**
-     * Retrieves representation of an instance of co.edu.javeriana.servicio.QuoteResource
-     * @return an instance of java.lang.String
-     
+   
     @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public String getXml() {
-        //TODO return proper representation object
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * PUT method for updating or creating an instance of QuoteResource
-     * @param content representation for the resource
-     
-    @PUT
-    @Consumes(MediaType.APPLICATION_XML)
-    public void putXml(String content) {
-    }*/
-    @GET
-    @Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
-    public String addCarrito(@QueryParam("NUM_ID") BigDecimal NUM_ID,
-                            @QueryParam("ORDER_DATE") String ORDER_DATE,
-                            @QueryParam("PRICE") BigDecimal PRICE,
-                            @QueryParam("STATUS") String STATUS,
-                            @QueryParam("COMMENTS") String COMMENTS,
-                            @QueryParam("CUST_DOCUMENT_NUMBER") String CUST_DOCUMENT_NUMBER,
-                            @QueryParam("CUST_DOCUMENT_TYPE") String CUST_DOCUMENT_TYPE) {
+    @Produces({MediaType.APPLICATION_JSON})
+    public String addCarrito(@QueryParam("productoNum") String productoNum,
+                            @QueryParam("productNombre") String productNombre,
+                            @QueryParam("precioProduc") String precioProduc,
+                            @QueryParam("cantidad") String cantidad,
+                            @QueryParam("totalCompra") String totalCompra,                            
+                            @QueryParam("status") String status,
+                            @QueryParam("idCliente") String idCliente) {
         ///jdbc:oracle:thin:@localhost:1521:XE [bayonaje on BAYONAJE]
+        Gson gsonBuilder = new GsonBuilder().create();
         try {
             String resultado;
             consultas cons = new consultas();
-            resultado = cons.creacionCarrito(NUM_ID, ORDER_DATE, PRICE, STATUS, COMMENTS, CUST_DOCUMENT_NUMBER, CUST_DOCUMENT_TYPE);
-            return resultado;
+            resultado = cons.creacionCarrito(productoNum, productNombre, precioProduc, cantidad, totalCompra, status, idCliente);
+            
+            // Convert Java Map into JSON 
+            Map personMap = new HashMap();
+            personMap.put("code", "200");
+            personMap.put("status", "success");
+            personMap.put("respuesta", resultado);
+            String jsonFromJavaMap = gsonBuilder.toJson(personMap);
+            
+            return jsonFromJavaMap;
         } catch (Exception e) { 
             System.err.println("Got an exception! "); 
             System.err.println(e.getMessage()); 
-            return "Error";
+            Map personMap = new HashMap();
+            personMap.put("code", "500");
+            personMap.put("Status", "500");
+            personMap.put("respuesta", "Error al consultar productos");
+            String jsonFromJavaMap = gsonBuilder.toJson(personMap);
+            return jsonFromJavaMap;
         } 
+    }
+    
+    @DELETE
+    @Path("eliminarCarrito")
+    @Produces({MediaType.APPLICATION_JSON})
+    public String emilinarCarrito(@QueryParam("idProducto")String idProducto){
+        Gson gsonBuilder = new GsonBuilder().create();
+        String resultado;
+        try{    
+            consultas cons = new consultas();
+            resultado = cons.eliminarDelCarrito(idProducto);
+            Map personMap = new HashMap();
+            personMap.put("code", "200");
+            personMap.put("Status", "success");
+            personMap.put("respuesta", resultado);
+            String jsonFromJavaMap = gsonBuilder.toJson(personMap);
+            return jsonFromJavaMap;
+        }catch(Exception e){
+            System.err.println("Got an exception! "); 
+            System.err.println(e.getMessage()); 
+            Map personMap = new HashMap();
+            personMap.put("code", "500");
+            personMap.put("Status", "fail");
+            personMap.put("respuesta", "Error al consultar productos");
+            String jsonFromJavaMap = gsonBuilder.toJson(personMap);
+            return jsonFromJavaMap;
+        }
     }
 }

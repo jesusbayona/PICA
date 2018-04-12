@@ -7,6 +7,10 @@ package co.edu.javeriana.servicio;
 
 import co.edu.javeriana.objetos.consultas;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -16,6 +20,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * REST Web Service
@@ -23,6 +29,7 @@ import javax.ws.rs.core.MediaType;
  * @author Jesus Bayona
  */
 @Path("autenticar")
+@Produces("application/json")
 public class AutenticarResource {
 
     @Context
@@ -55,12 +62,33 @@ public class AutenticarResource {
     }*/
      
     @GET
-    @Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
     public String autenticacion(@QueryParam("email") String email,@QueryParam("pass") String pass) throws SQLException {
         //TODO return proper representation object
-         String resultado;
-            consultas cons = new consultas();
-            resultado = cons.autenticacion(email, pass);
-            return resultado;
+        List languagesArrayList = new ArrayList();
+        consultas cons = new consultas();
+        Gson gsonBuilder = new GsonBuilder().create();
+        
+        try{
+            languagesArrayList.add(cons.autenticacion(email, pass)); 
+            
+            Map<String, Object> personMap = new HashMap<String, Object>();
+            personMap.put("code", "200");
+            personMap.put("status", "success");
+            personMap.put("autenticacion", languagesArrayList);
+            String jsonFromJavaMap = gsonBuilder.toJson(personMap);
+            return jsonFromJavaMap;
+        }catch(Exception e) { 
+            System.err.println("Got an exception! "); 
+            System.err.println(e.getMessage());
+            Map personMap = new HashMap();
+            personMap.put("code", "500");
+            personMap.put("status", "fall");
+            personMap.put("respuesta", "Usuario y/o contraseña erroneo");
+            String jsonFromJavaMap = gsonBuilder.toJson(personMap);
+            return jsonFromJavaMap;
+        } 
+        
+         
     }
 }

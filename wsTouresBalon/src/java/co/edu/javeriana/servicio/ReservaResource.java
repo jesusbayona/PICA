@@ -6,7 +6,11 @@
 package co.edu.javeriana.servicio;
 
 import co.edu.javeriana.objetos.consultas;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
@@ -23,6 +27,7 @@ import javax.ws.rs.core.MediaType;
  * @author Jesus Bayona
  */
 @Path("reserva")
+@Produces("application/json")
 public class ReservaResource {
 
     @Context
@@ -34,44 +39,32 @@ public class ReservaResource {
     public ReservaResource() {
     }
 
-    /**
-     * Retrieves representation of an instance of co.edu.javeriana.servicio.ReservaResource
-     * @return an instance of java.lang.String
-     
     @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public String getXml() {
-        //TODO return proper representation object
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * PUT method for updating or creating an instance of ReservaResource
-     * @param content representation for the resource
-     
-    @PUT
-    @Consumes(MediaType.APPLICATION_XML)
-    public void putXml(String content) {
-    }*/
-    @GET
-    @Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
-    public String addReserva(@QueryParam("NUM_ID") BigDecimal NUM_ID,
-                            @QueryParam("ORDER_DATE") String ORDER_DATE,
-                            @QueryParam("PRICE") BigDecimal PRICE,
-                            @QueryParam("STATUS") String STATUS,
-                            @QueryParam("COMMENTS") String COMMENTS,
-                            @QueryParam("CUST_DOCUMENT_NUMBER") String CUST_DOCUMENT_NUMBER,
-                            @QueryParam("CUST_DOCUMENT_TYPE") String CUST_DOCUMENT_TYPE) {
+    @Produces({MediaType.APPLICATION_JSON})
+    public String addReserva(@QueryParam("ideCliente") String ideCliente) {
         ///jdbc:oracle:thin:@localhost:1521:XE [bayonaje on BAYONAJE]
+        Gson gsonBuilder = new GsonBuilder().create();
         try {
             String resultado;
             consultas cons = new consultas();
-            resultado = cons.creacionReserva(NUM_ID, ORDER_DATE, PRICE, STATUS, COMMENTS, CUST_DOCUMENT_NUMBER, CUST_DOCUMENT_TYPE);
-            return resultado;
+            resultado = cons.creacionReserva(ideCliente);
+            // Convert Java Map into JSON 
+            Map personMap = new HashMap();
+            personMap.put("code", "200");
+            personMap.put("status", "success");
+            personMap.put("respuesta", resultado);
+            String jsonFromJavaMap = gsonBuilder.toJson(personMap);
+            
+            return jsonFromJavaMap;
         } catch (Exception e) { 
             System.err.println("Got an exception! "); 
             System.err.println(e.getMessage()); 
-            return "Error";
+            Map personMap = new HashMap();
+            personMap.put("code", "500");
+            personMap.put("Status", "fail");
+            personMap.put("respuesta", "Error al realizar la reserva");
+            String jsonFromJavaMap = gsonBuilder.toJson(personMap);
+            return jsonFromJavaMap;
         } 
     }
 }

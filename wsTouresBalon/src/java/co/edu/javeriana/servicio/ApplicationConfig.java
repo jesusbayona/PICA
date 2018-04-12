@@ -35,16 +35,17 @@ public class ApplicationConfig extends Application {
         resources.add(co.edu.javeriana.servicio.CountryFacadeREST.class);
         resources.add(co.edu.javeriana.servicio.CustomerAddressFacadeREST.class);
         resources.add(co.edu.javeriana.servicio.CustomerFacadeREST.class);
-        resources.add(co.edu.javeriana.servicio.ItemReservaResource.class);
+        resources.add(co.edu.javeriana.servicio.DetalleProductoResource.class);
         resources.add(co.edu.javeriana.servicio.LodgingFacadeREST.class);
         resources.add(co.edu.javeriana.servicio.OrderItemFacadeREST.class);
         resources.add(co.edu.javeriana.servicio.ProductFacadeREST.class);
-        resources.add(co.edu.javeriana.servicio.QuoteItemResource.class);
+        resources.add(co.edu.javeriana.servicio.ProductosResource.class);
         resources.add(co.edu.javeriana.servicio.QuoteResource.class);
         resources.add(co.edu.javeriana.servicio.ReservaResource.class);
         resources.add(co.edu.javeriana.servicio.SalesOrderFacadeREST.class);
         resources.add(co.edu.javeriana.servicio.SpectacleFacadeREST.class);
         resources.add(co.edu.javeriana.servicio.TransportFacadeREST.class);
+        resources.add(co.edu.javeriana.servicio.VerCarritoResource.class);
     }
     
 }
