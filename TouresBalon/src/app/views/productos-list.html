@@ -1,0 +1,30 @@
+<h2>{{titulo}}</h2>
+<hr>
+
+<div *ngIf = "!productos">
+    Cargando Catalogo de ofertas...
+</div>
+
+<div *ngIf = "productos">
+    <div class="row">
+        <div class="col-lg-3" *ngFor = "let producto of productos[0]">
+            <div class="thumbnail">
+                <div *ngIf="producto.THUMBNAIL" class="imagen_container">
+                    <img src="http://localhost/touresbalon-b2c-pica2018/media/rusia.jpg" class="producto_imagen" />
+                </div>
+                <div *ngIf="!producto.THUMBNAIL">
+                    <div class="imagen_relleno"></div>
+                </div>
+
+                <div class="caption">
+                        <h4>{{producto.NAME}}</h4>
+                        <p>$ {{producto.VALORVENTA}}</p>
+                        <p>
+                            <a href="#" class="btn btn-md btn-primary">Detalle</a>
+                            <a (click)="onAddCart(producto.PRODUCTID,producto.NAME,producto.VALORVENTA,1,producto.VALORVENTA,'A',2)" class="btn btn-md btn-danger" >Agregar al carrito</a>
+                        </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
